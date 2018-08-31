@@ -19,10 +19,11 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "ns3/on-off-helper.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("FirstScriptExample");
+NS_LOG_COMPONENT_DEFINE ("Simulacion 1");
 
 int
 main (int argc, char *argv[])
@@ -58,12 +59,22 @@ main (int argc, char *argv[])
   serverApps.Start (Seconds (1.0));
   serverApps.Stop (Seconds (10.0));
 
-  UdpEchoClientHelper echoClient (interfaces.GetAddress (1), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
+  //UdpEchoClientHelper echoClient (interfaces.GetAddress (1), 9);
+  //echoClient.SetAttribute ("MaxPackets", UintegerValue (1));
+  //echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
+  //echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
-  ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
+  OnOffHelper onoff ("ns3::TcpSocketFactory", interfaces.GetAddress (0));
+  onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+  onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+  onoff.SetAttribute ("PacketSize", UintegerValue (1024));
+  onoff.SetAttribute ("DataRate", DataRateValue (150000000)); //bit/s
+
+  AddressValue remoteAddress (InetSocketAddress (interfaces.GetAddress (1), 9));
+  onoff.SetAttribute ("Remote", remoteAddress);
+
+  ApplicationContainer clientApps;
+  clientApps.Add(onoff.Install (nodes.Get (0)));
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
 
