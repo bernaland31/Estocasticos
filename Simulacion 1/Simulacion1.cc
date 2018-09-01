@@ -39,8 +39,8 @@ main (int argc, char *argv[])
   nodes.Create (2);
 
   PointToPointHelper pointToPoint;
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("128Kbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("100ms"));
 
   NetDeviceContainer devices;
   devices = pointToPoint.Install (nodes);
@@ -64,11 +64,11 @@ main (int argc, char *argv[])
   //echoClient.SetAttribute ("Interval", TimeValue (Seconds (1.0)));
   //echoClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
-  OnOffHelper onoff ("ns3::TcpSocketFactory", interfaces.GetAddress (0));
+  OnOffHelper onoff ("ns3::UdpSocketFactory", interfaces.GetAddress (0));
   onoff.SetAttribute ("OnTime",  StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   onoff.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-  onoff.SetAttribute ("PacketSize", UintegerValue (1024));
-  onoff.SetAttribute ("DataRate", DataRateValue (150000000)); //bit/s
+  onoff.SetAttribute ("PacketSize", UintegerValue (2048));
+  onoff.SetAttribute ("DataRate", DataRateValue (150000)); //bit/s
 
   AddressValue remoteAddress (InetSocketAddress (interfaces.GetAddress (1), 9));
   onoff.SetAttribute ("Remote", remoteAddress);
